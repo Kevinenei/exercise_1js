@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Ejercicio 1 - Digital House</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+<body>
+<header>
+	<div class="maxw980px">
+	<h1>PRESTAMO.COM</h1>
+	<ul>
+		<li>INICIO</li>
+		<li class="active">CALCULADORA DE PRESTAMOS</li>
+	</ul>
+	</div>
+</header>
+
+<section>
+<h2>Cálculo de préstamos</h2>
+<p>Cálculo de Préstamos - Para el cálculo de préstamos, esta calculadora le permite<br>
+calcular la cuota mensual a pagar en su préstamo, asi como el total de intereses<p>
+
+	<form>
+		<div>
+		 	<p>Cuanto dinero necesitas</p>
+		 	<span>$ </span><input name="importe" type="text" > 
+		</div>
+		<div>
+			 <p>Seleccione su Ubicación</p>
+			 <select id="provincias"></select>
+		</div>
+		<div>
+			<p>En cuanto meses queres pagarlo</p>
+			<input name="meses" type="text" value="3"> 
+		</div>
+		<div id="botones">
+		<button type="button" id="calcular">Calcular</button> 
+		<input type="reset" value="Borrar">
+		</div>
+		<div class="resultados">
+		<div>
+			<p>Taza de interés</p>
+			<input name="taza" type="text" value="20%" disabled>
+		</div>
+		<div>
+			<p>Cuota Mensual</p>
+			<input name="cuotam" type="text" disabled> 
+		</div>
+		<div>
+			<p>Total a pagar</p>
+			<input name="total" type="text" disabled> 
+		</div>
+		</div>
+	</form> 
+</section>
+<style>
+	*{font-family: 'Roboto', sans-serif;}
+	h1{color:#005FC3;}
+	section{padding:0px 20px; }
+	header ul {background-color:#00487D; padding:0 10px; display:flex; width:100%;  flex-wrap:wrap; }
+	header ul li{list-style:none; color:white; padding:10px;  }
+	.active{background-color: #0766C4;}
+	.maxw980px{max-width:980px; width:100%; }
+	form p{font-weight:bold;}
+
+	input,button{
+		padding:10px;
+		background-color:#D2D2D2;
+		border:0px;
+		border-radius:10px;    
+		font-weight:bold; 
+	}
+
+	input:focus,select:focus,textarea:focus,button:focus {outline:none;}
+
+	#botones{margin:20px 0px; }
+	#botones input{background:#F75959;color:white;}
+	#botones button:hover{background:#00487D; cursor:pointer;}
+	#botones input:hover{background:#840000; cursor:pointer;}
+	#botones button{background:#0766C4;		color:white; cursor:pointer;}
+
+	.resultados{display:flex; flex-wrap:wrap;}
+	.resultados div{margin:0px 10px; }
+	.resultados div:nth-child(1) input{background:#00ACA6; color:white; text-align:center; font }
+</style>
+
+<script type="text/javascript">
+
+var importe = document.getElementsByName("importe")[0];
+var total = document.getElementsByName("total")[0];
+var taza = document.getElementsByName("taza")[0];
+var cuotam = document.getElementsByName("cuotam")[0];
+var meses = document.getElementsByName("meses")[0];
+var porcentaje;
+document.getElementById("calcular").onclick = calcularprestamo;
+function calcularprestamo() {
+	if (!isNaN(parseInt(importe.value))) {
+
+		if (meses.value <= 3 ) {
+			porcentaje = 0.2;
+			taza.value = "20%";
+		}else if (meses.value <= 6){
+			porcentaje = 0.3;
+			taza.value = "30%";
+		}else if (meses.value <= 12){
+			porcentaje = 0.4;
+			taza.value = "40%";
+		}else{
+			alert("El limite de cuotas es hasta 12");
+		}
+	valortotal = importe.value * porcentaje + parseInt(importe.value);
+	var valorcuota = valortotal / meses.value;
+	cuotam.value = valorcuota.toFixed(2)
+	total.value = valortotal;
+}else{
+	alert("Es obligatorio ingresar un importe correcto");
+}
+}
+
+/*Json - Provincias*/
+function fetchJSONFile(path, callback) {
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onreadystatechange = function() {
+        if (httpRequest.readyState === 4) {
+            if (httpRequest.status === 200) {
+                var data = JSON.parse(httpRequest.responseText);
+                if (callback) callback(data);
+            }
+        }
+    };
+    httpRequest.open('GET', path);
+    httpRequest.send(); 
+}
+
+fetchJSONFile('jsonProvincias-master/provincias.json', function(data){
+
+	var select = document.getElementById('provincias');
+	for (i = 0; i < data.length; i++) { 
+		var optionelement = document.createElement("option"); 
+		optionelement.value = crearvalueprovincia(data[i].state);
+		optionelement.text = data[i].state;
+		select.appendChild(optionelement);
+	}
+});
+
+/*Value de provincias*/
+/*El nombre de la provicia sin mayuscula y remplaza espacios por -*/
+function crearvalueprovincia(x){
+	x = x.toLowerCase();
+	x = x.replace(/\s/g,"-");
+	return x;
+}
+</script>
+</body>
+</html>
